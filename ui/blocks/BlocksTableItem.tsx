@@ -10,13 +10,13 @@ import { route } from 'nextjs-routes';
 import config from 'configs/app';
 import getBlockTotalReward from 'lib/block/getBlockTotalReward';
 import { WEI } from 'lib/consts';
-import BlockTimestamp from 'ui/blocks/BlockTimestamp';
 import AddressEntity from 'ui/shared/entities/address/AddressEntity';
 import BlockEntity from 'ui/shared/entities/block/BlockEntity';
 import GasUsedToTargetRatio from 'ui/shared/GasUsedToTargetRatio';
 import IconSvg from 'ui/shared/IconSvg';
 import LinkInternal from 'ui/shared/links/LinkInternal';
 import TextSeparator from 'ui/shared/TextSeparator';
+import TimeAgoWithTooltip from 'ui/shared/TimeAgoWithTooltip';
 import Utilization from 'ui/shared/Utilization/Utilization';
 
 interface Props {
@@ -58,7 +58,14 @@ const BlocksTableItem = ({ data, isLoading, enableTimeIncrement }: Props) => {
             />
           </Tooltip>
         </Flex>
-        <BlockTimestamp ts={ data.timestamp } isEnabled={ enableTimeIncrement } isLoading={ isLoading }/>
+        <TimeAgoWithTooltip
+          timestamp={ data.timestamp }
+          enableIncrement={ enableTimeIncrement }
+          isLoading={ isLoading }
+          color="text_secondary"
+          fontWeight={ 400 }
+          display="inline-block"
+        />
       </Td>
       <Td fontSize="sm">
         <Skeleton isLoaded={ !isLoading } display="inline-block">

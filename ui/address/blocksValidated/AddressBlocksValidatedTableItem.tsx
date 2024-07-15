@@ -6,8 +6,8 @@ import type { Block } from 'types/api/block';
 
 import config from 'configs/app';
 import getBlockTotalReward from 'lib/block/getBlockTotalReward';
-import useTimeAgoIncrement from 'lib/hooks/useTimeAgoIncrement';
 import BlockEntity from 'ui/shared/entities/block/BlockEntity';
+import TimeAgoWithTooltip from 'ui/shared/TimeAgoWithTooltip';
 import Utilization from 'ui/shared/Utilization/Utilization';
 
 type Props = Block & {
@@ -16,7 +16,6 @@ type Props = Block & {
 };
 
 const AddressBlocksValidatedTableItem = (props: Props) => {
-  const timeAgo = useTimeAgoIncrement(props.timestamp, props.page === 1);
   const totalReward = getBlockTotalReward(props);
 
   return (
@@ -32,9 +31,13 @@ const AddressBlocksValidatedTableItem = (props: Props) => {
         />
       </Td>
       <Td>
-        <Skeleton isLoaded={ !props.isLoading } color="text_secondary" display="inline-block">
-          <span>{ timeAgo }</span>
-        </Skeleton>
+        <TimeAgoWithTooltip
+          timestamp={ props.timestamp }
+          enableIncrement={ props.page === 1 }
+          isLoading={ props.isLoading }
+          color="text_secondary"
+          display="inline-block"
+        />
       </Td>
       <Td>
         <Skeleton isLoaded={ !props.isLoading } display="inline-block" fontWeight="500">
