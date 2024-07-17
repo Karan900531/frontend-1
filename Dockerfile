@@ -3,8 +3,7 @@
 # *****************************
 FROM node:20.11.0-alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat python3 make g++
-RUN ln -sf /usr/bin/python3 /usr/bin/python
+RUN apk add --no-cache libc6-compat
 
 ### APP
 # Install dependencies
@@ -34,13 +33,11 @@ RUN yarn --frozen-lockfile
 FROM node:20.11.0-alpine AS builder
 RUN apk add --no-cache --upgrade libc6-compat bash
 
-# pass build args to env variables
+# pass commit sha and git tag to the app image
 ARG GIT_COMMIT_SHA
 ENV NEXT_PUBLIC_GIT_COMMIT_SHA=$GIT_COMMIT_SHA
 ARG GIT_TAG
 ENV NEXT_PUBLIC_GIT_TAG=$GIT_TAG
-ARG NEXT_OPEN_TELEMETRY_ENABLED
-ENV NEXT_OPEN_TELEMETRY_ENABLED=$NEXT_OPEN_TELEMETRY_ENABLED
 
 ENV NODE_ENV production
 
@@ -60,8 +57,8 @@ RUN ./collect_envs.sh ./docs/ENVS.md
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 # Build app for production
-RUN yarn svg:build-sprite
 RUN yarn build
+RUN yarn svg:build-sprite
 
 
 ### FEATURE REPORTER
@@ -120,11 +117,6 @@ RUN ["chmod", "-R", "777", "./public"]
 # Copy ENVs files
 COPY --from=builder /app/.env.registry .
 COPY --from=builder /app/.env .
-
-# Copy ENVs presets
-ARG ENVS_PRESET
-ENV ENVS_PRESET=$ENVS_PRESET
-COPY ./configs/envs ./configs/envs
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
